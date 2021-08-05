@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
       color: Colors.indigo,
       child: Center(
         child: Text(
-          'Covid-19 infomation',
+          'اطلاعات ویروس کرونا',
           style: TextStyle(
               fontSize: 25,
               color: Colors.white,

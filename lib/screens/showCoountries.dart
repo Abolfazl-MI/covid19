@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ShowCountries extends StatefulWidget {
   @override
@@ -8,6 +10,7 @@ class ShowCountries extends StatefulWidget {
 }
 
 class _ShowCountriesState extends State<ShowCountries> {
+  List iteam = List();
   List countries = List();
   bool loading = true;
   @override
@@ -19,31 +22,85 @@ class _ShowCountriesState extends State<ShowCountries> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              title: Text('Show Countries'),
-              backgroundColor: Colors.indigo,
-              centerTitle: true,
-            ),
-          ];
-        },
-        body: _biuldBody(),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                title: Text(
+                  'نمایش لیست کشور ها ',
+                  style: TextStyle(fontFamily: 'Yekan'),
+                ),
+                backgroundColor: Colors.indigo,
+                centerTitle: true,
+              ),
+            ];
+          },
+          body: _biuldBody(),
+        ),
       ),
     );
   }
 
   Widget _biuldBody() {
+    if (loading) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SpinKitRing(
+            color: Colors.indigo[700],
+            lineWidth: 3.5,
+          ),
+          SizedBox(height: 10),
+          Text(
+            'در حال دریافت اطلاعات',
+            style: TextStyle(
+                fontFamily: 'Yekan', fontWeight: FontWeight.bold, fontSize: 20),
+          )
+        ],
+      );
+    }
     return Container(
       child: Column(
         children: [
+          Container(
+            padding: EdgeInsets.only(top: 10, left: 8, right: 8),
+            // padding: EdgeInsets.symmetric(horizontal: 10),
+            child: TextField(
+              onChanged: (String value) {
+                iteam.clear();
+                if (value.isEmpty) {
+                  iteam.addAll(countries);
+                } else {
+                  countries.forEach((element) {
+                    if (element['Country']
+                        .toString()
+                        .toLowerCase()
+                        .contains(value.toLowerCase())) {
+                      iteam.add(element);
+                    }
+                  });
+                }
+
+                setState(() {});
+              },
+              decoration: InputDecoration(
+                  // enabled: false,
+                  hintText: 'جستجو',
+                  prefixIcon: Icon(CupertinoIcons.search),
+                  border: OutlineInputBorder(
+                      // borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(25)))),
+            ),
+          ),
           Expanded(
             child: ListView.builder(
-                itemCount: countries.length,
+                itemCount: iteam.length,
+                padding: EdgeInsets.zero,
                 itemBuilder: (BuildContext context, int index) {
-                  var country = countries[index];
+                  var country = iteam[index];
 
                   return Container(
                     padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -66,6 +123,8 @@ class _ShowCountriesState extends State<ShowCountries> {
     );
   }
 
+  Widget _loading() {}
+
   void _setData() async {
     var url = 'https://api.covid19api.com/countries';
     var response = await http.get(url);
@@ -73,6 +132,7 @@ class _ShowCountriesState extends State<ShowCountries> {
       print('status:200');
       var jsonResponse = convert.jsonDecode(response.body);
       countries = jsonResponse;
+      iteam.addAll(jsonResponse);
     } else {
       print('something went wrong');
     }
