@@ -116,6 +116,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.1"
+  persian_date:
+    dependency: "direct main"
+    description:
+      name: persian_date
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   sky_engine:
     dependency: transitive
     description: flutter

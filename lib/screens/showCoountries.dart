@@ -1,3 +1,5 @@
+import 'package:covid19/screens/countryPersianName.dart';
+import 'package:covid19/screens/showcountryinfo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert' as convert;
@@ -76,9 +78,13 @@ class _ShowCountriesState extends State<ShowCountries> {
                 } else {
                   countries.forEach((element) {
                     if (element['Country']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase())) {
+                            .toString()
+                            .toLowerCase()
+                            .contains(value.toLowerCase()) ||
+                        element['PersianName']
+                            .toString()
+                            .toLowerCase()
+                            .contains(value)) {
                       iteam.add(element);
                     }
                   });
@@ -107,7 +113,18 @@ class _ShowCountriesState extends State<ShowCountries> {
                     child: Material(
                       elevation: 3.0,
                       child: ListTile(
-                        title: Text(country['Country']),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ShowInfo(
+                                        country: country,
+                                      )));
+                        },
+                        title: Text(
+                          country['PersianName'],
+                          style: TextStyle(fontSize: 20, fontFamily: 'Yekan'),
+                        ),
                         trailing: Image.asset(
                           'assets/flags/${country['ISO2'].toLowerCase()}.png',
                           height: 60,
@@ -130,7 +147,12 @@ class _ShowCountriesState extends State<ShowCountries> {
     var response = await http.get(url);
     if (response.statusCode == 200) {
       print('status:200');
-      var jsonResponse = convert.jsonDecode(response.body);
+      List jsonResponse = convert.jsonDecode(response.body);
+      jsonResponse.forEach((element) {
+        element['PersianName'] =
+            convertCountryISO2ToPersianName[element['ISO2']];
+        print(element);
+      });
       countries = jsonResponse;
       iteam.addAll(jsonResponse);
     } else {
