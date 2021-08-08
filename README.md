@@ -4,7 +4,7 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a starting point for a Flutter application. and it will bring you the hotest number of covid 19 deaths,actives and country name 
 
 A few resources to get you started if this is your first Flutter project:
 
